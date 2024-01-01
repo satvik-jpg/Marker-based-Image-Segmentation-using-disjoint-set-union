@@ -49,14 +49,41 @@ parent = np.full(
 )  # creating a parent numpy 2d array with initial value being -3 indicating that the pixel is not yet processed
 image = np.full(width * height, 0)
 final_gradient_image = np.full(width * height, 0)
-y1 = 208
-x1 = 190
-y2 = 286
-x2 = 344
 
-for i in range(2):
+
+print(
+    "Enter the number of markers and then enter four integers corresponding to each marker"
+)
+print(
+    "The four numbers represent the two x and y coordinates of the opposite vertices of the rectangular marker"
+)
+print(
+    "The first and third is the y coordinate while the second and the fourth is x coordinate"
+)
+print(
+    "Note that the image on which segmentation is applied will be displayed and you will need it for choosing the markers."
+)
+print(
+    "Till the image is being displayed,the input that you will give to the program wouldn't be displayed, but dont worry your input is being recorded. Hence,keep this in mind while giving the input"
+)
+print(
+    "Once you close the image,your input will be displayed.I am still working on how to take input in a more user-friendly manner,any suggestions are welcome"
+)
+
+plt.imshow(org_image_with_markers)
+plt.show()
+N = int(input())
+for i in range(N):
     # temp = [[x1, y1], [x2, y2], [x3, y3], [x4, y4]]
     # list.append(temp)
+    tempy1 = int(input())
+    tempx1 = int(input())
+    tempy2 = int(input())
+    tempx2 = int(input())
+    y1 = min(tempy1, tempy2)
+    y2 = max(tempy1, tempy2)
+    x1 = min(tempx1, tempx2)
+    x2 = max(tempx1, tempx2)
     for j in range(x1, x2 + 1):
         ndimg[y1][j] = -1
         ndimg[y2][j] = -1
@@ -68,13 +95,6 @@ for i in range(2):
         ndimg[i][x2] = -1
         org_image_with_markers[i][x1] = [255, 0, 0]
         org_image_with_markers[i][x2] = [255, 0, 0]
-    y1 = 190
-    x1 = 662
-    y2 = 329
-    x2 = 815
-
-# plt.imshow(org_image_with_markers)
-# plt.show()
 
 dict = {}
 for i in range(height):
@@ -166,8 +186,7 @@ for i in range(0, width * height):
     else:
         parent[image[j]] = parent[parent[image[j]]]
 # HIGHLIGHTING THE MARKERS
-final_segmented_image = mpimg.imread(input_image_path).copy()
-gradient_segmented_image = mpimg
+final_segmented_image = plt.imread(input_image_path).copy()
 
 
 def HIGHLIGHT(p, p1):
@@ -190,5 +209,7 @@ for pixel in image:
 for i in range(0, height):
     for j in range(0, width):
         ndimg[i][j] = final_gradient_image[i * width + j]
+plt.imshow(ndimg)
+plt.show()
 plt.imshow(final_segmented_image)
 plt.show()

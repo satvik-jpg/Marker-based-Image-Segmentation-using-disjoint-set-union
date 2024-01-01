@@ -26,7 +26,7 @@ def convert_to_gradient_image(image_path):
     return gradient_image
 
 
-input_image_path = "mount.jpg"
+input_image_path = "cart.jpg"
 result_image = convert_to_gradient_image(input_image_path)
 cv2.imwrite(input_image_path + "_gradient.jpg", result_image)
 img2 = mpimg.imread(input_image_path + "_gradient.jpg")
