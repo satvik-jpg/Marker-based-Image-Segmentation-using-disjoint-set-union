@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.self.image as mpimg
+import matplotlib.image as mpimg
 import cv2
 
 
@@ -8,14 +8,14 @@ class Image_Seg:
     def __init__(self, image_path, marker_list):
         self.image_path = image_path
         self.marker_list = marker_list
-        self.self.width
-        self.self.height
-        self.self.parent = np.full(
-            self.self.width * self.self.height, -3
+        self.width=0
+        self.height=0
+        self.parent = np.full(
+            self.width * self.height, -3
         )  # creating a self.parent numpy 2d array with initial value being -3 indicating that the pixel is not yet processed
-        self.self.image = np.full(self.self.width * self.self.height, 0)
-        self.final_gradient_image = np.full(self.self.width * self.self.height, 0)
-        self.final_segmented_image
+        self.image = np.full(self.width * self.height, 0)
+        self.final_gradient_image = np.full(self.width * self.height, 0)
+        self.final_segmented_image = plt.imread(self.image_path).copy()
 
     def convert_to_gradient_image(self, image_path):
         # Read the self.image
@@ -65,11 +65,12 @@ class Image_Seg:
     def HIGHLIGHT(self, p, p1):
         if p1 >= 0 and p1 <= self.width * self.height - 1:
             if self.parent[p] > self.parent[p1]:
-                self.final_segmented_image[int(p / self.width)][p % self.width] = [
-                    255,
-                    0,
-                    0,
-                ]
+                i=int(p / self.width)
+                j=p % self.width
+                self.final_segmented_image[i][j] = [255,0,0]
+                self.final_segmented_image[i-1][j-1] = [255,0,0]
+                self.final_segmented_image[i-2][j-2] = [255,0,0]
+
                 self.final_gradient_image[p] = 255
 
     def FIND(self, p):
@@ -94,9 +95,15 @@ class Image_Seg:
         # note:astype(int) converts the type of numpy array(returned from .imread) from uint to int
         # org_image_with_markers = mpimg.imread("cart.jpg")
 
-        org_image_with_markers = mpimg.imread("cart.jpg").copy()
-        self.self.width = len(ndimg[0])
-        self.self.height = len(ndimg)
+        org_image_with_markers = mpimg.imread(self.image_path).copy()
+        self.width = len(ndimg[0])
+        self.height = len(ndimg)
+        self.parent = np.full(
+            self.width * self.height, -3
+        )  # creating a self.parent numpy 2d array with initial value being -3 indicating that the pixel is not yet processed
+        self.image = np.full(self.width * self.height, 0)
+        self.final_gradient_image = np.full(self.width * self.height, 0)
+
 
         for marker in self.marker_list:
             # temp = [[x1, y1], [x2, y2], [x3, y3], [x4, y4]]
@@ -112,8 +119,8 @@ class Image_Seg:
             for j in range(x1, x2 + 1):
                 ndimg[y1][j] = -1
                 ndimg[y2][j] = -1
-                org_image_with_markers[y1][i] = [255, 0, 0]
-                org_image_with_markers[y2][i] = [255, 0, 0]
+                org_image_with_markers[y1][j] = [255, 0, 0]
+                org_image_with_markers[y2][j] = [255, 0, 0]
 
             for i in range(y1, y2 + 1):
                 ndimg[i][x1] = -1
@@ -122,14 +129,14 @@ class Image_Seg:
                 org_image_with_markers[i][x2] = [255, 0, 0]
 
         dict = {}
-        for i in range(self.self.height):
-            for j in range(self.self.width):
+        for i in range(self.height):
+            for j in range(self.width):
                 if ndimg[i][j] not in dict:
                     list = []
-                    list.append(i * self.self.width + j)
+                    list.append(i * self.width + j)
                     dict[ndimg[i][j]] = list
                 else:
-                    dict[ndimg[i][j]].append(i * self.self.width + j)
+                    dict[ndimg[i][j]].append(i * self.width + j)
 
         mykeys = []
         for key in dict.keys():
@@ -138,23 +145,23 @@ class Image_Seg:
         i = 0
         for key in mykeys:
             for pixel in dict[key]:
-                self.self.image[i] = pixel
+                self.image[i] = pixel
                 i = i + 1
 
-        for pixel in self.self.image:
-            if ndimg[int(pixel / self.self.width)][pixel % self.self.width] == -1:
-                self.self.parent[pixel] = -2
+        for pixel in self.image:
+            if ndimg[int(pixel / self.width)][pixel % self.width] == -1:
+                self.parent[pixel] = -2
                 # check all neighbours
-                self.MARKER(pixel, pixel - self.self.width - 1)
-                self.MARKER(pixel, pixel - self.self.width)
-                self.MARKER(pixel, pixel - self.self.width + 1)
+                self.MARKER(pixel, pixel - self.width - 1)
+                self.MARKER(pixel, pixel - self.width)
+                self.MARKER(pixel, pixel - self.width + 1)
                 self.MARKER(pixel, pixel - 1)
                 self.MARKER(pixel, pixel + 1)
-                self.MARKER(pixel, pixel + self.self.width - 1)
-                self.MARKER(pixel, pixel + self.self.width)
-                self.MARKER(pixel, pixel + self.self.width + 1)
+                self.MARKER(pixel, pixel + self.width - 1)
+                self.MARKER(pixel, pixel + self.width)
+                self.MARKER(pixel, pixel + self.width + 1)
             else:
-                self.self.parent[pixel] = -1
+                self.parent[pixel] = -1
                 # check all neighbours
                 self.NON_MARKER(pixel, pixel - self.width - 1)
                 self.NON_MARKER(pixel, pixel - self.width)
@@ -175,7 +182,7 @@ class Image_Seg:
             else:
                 self.parent[self.image[j]] = self.parent[self.parent[self.image[j]]]
         # HIGHLIGHTING THE MARKERS
-        self.final_segmented_image = plt.imread(self.input_image_path).copy()
+        self.final_segmented_image = plt.imread(self.image_path).copy()
         for pixel in self.image:
             self.HIGHLIGHT(pixel, pixel - self.width - 1)
             self.HIGHLIGHT(pixel, pixel - self.width)
@@ -189,9 +196,10 @@ class Image_Seg:
         for i in range(0, self.height):
             for j in range(0, self.width):
                 ndimg[i][j] = self.final_gradient_image[i * self.width + j]
-        plt.imshow(ndimg)
-        plt.show()
-        plt.imshow(self.final_segmented_image)
-        plt.show()
+        # plt.imshow(ndimg)
+        # plt.show()
+        # plt.imshow(self.final_segmented_image)
+        # plt.show()
+        return self.final_segmented_image
 
     # seg function ended here

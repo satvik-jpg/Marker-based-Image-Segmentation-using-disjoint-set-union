@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Coordinate Picker</title>
+    <link rel="stylesheet" href="/static/css/styles2.css" />
+  </head>
+  <body>
+    <h1>Click on the Image to Get Coordinates</h1>
+    <div id="image-container">
+      <img id="image" src="{{client_img_path}}" alt="Your Image" />
+    </div>
+    <p id="coordinates">Coordinates: (x, y)</p>
+    <script src="/static/js/script2.js"></script>
+    <br /><br />
+
+    <form action="/submit" method="post" enctype="multipart/form-data">
+      <div id="boxSetsContainer"></div>
+
+      <button type="button" id="addBoxSet" class="btn">+ Add Box Set</button
+      ><br /><br />
+      <input type="submit" value="Upload" class="upload-btn" />
+    </form>
+  </body>
+</html>

@@ -1,2 +1,4 @@
 IGNORED/
 image_segmentation_in_c++.exe
+.vscode/
+__pycache__/
